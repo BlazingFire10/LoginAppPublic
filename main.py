@@ -28,15 +28,18 @@ def addAcct(user, pas):
 def logout():
   return redirect('/')
 
-@app.route('/login', methods = ['POST'])
+@app.route('/login', methods = ['POST', 'GET'])
 def login():
-  sql = 'SELECT username FROM passwords WHERE username = (?)'
-  sql2 = 'SELECT password FROM passwords WHERE username = (?)'
-  
-  if c.execute(sql, (request.form['username'],)).fetchone() != None and c.execute(sql2, (request.form['username'],)).fetchone()[0] == request.form['password']:
-    return redirect(f'/home/{request.form["username"]}')
+  if request.method == 'GET':
+    return redirect('/')
   else:
-    return render_template('login.html', message = "Username and password do not match (or there is no account tied to this username)")
+    sql = 'SELECT username FROM passwords WHERE username = (?)'
+    sql2 = 'SELECT password FROM passwords WHERE username = (?)'
+    
+    if c.execute(sql, (request.form['username'],)).fetchone() != None and c.execute(sql2, (request.form['username'],)).fetchone()[0] == request.form['password']:
+      return redirect(f'/home/{request.form["username"]}')
+    else:
+      return render_template('login.html', message = "Username and password do not match (or there is no account tied to this username)")
 
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
